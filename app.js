@@ -1,4 +1,4 @@
-// app.js – KaiOS Fraud Protection App
+// app.js – KaiOS Fraud Protection App (with Groq AI backend)
 
 (function () {
   'use strict';
@@ -66,30 +66,30 @@
     var key = e.keyCode || e.which;
 
     if (currentScreen === 'home') {
-      if (key === 38) { // Up
+      if (key === 38) {
         e.preventDefault();
         selectedIndex = (selectedIndex - 1 + totalItems) % totalItems;
         highlightMenu();
-      } else if (key === 40) { // Down
+      } else if (key === 40) {
         e.preventDefault();
         selectedIndex = (selectedIndex + 1) % totalItems;
         highlightMenu();
-      } else if (key === 13) { // Enter / OK
+      } else if (key === 13) {
         selectMenu();
-      } else if (key >= 49 && key <= 53) { // 1-5
+      } else if (key >= 49 && key <= 53) {
         selectedIndex = key - 49;
         highlightMenu();
         selectMenu();
       }
     } else {
-      if (key === 8) { // Backspace
+      if (key === 8) {
         e.preventDefault();
         goBack();
       }
     }
   });
 
-  // ---- Menu click / softkey ----
+  // ---- Menu click ----
   for (var i = 0; i < menuItems.length; i++) {
     (function (idx) {
       menuItems[idx].addEventListener('click', function () {
@@ -106,7 +106,7 @@
     backBtns[b].addEventListener('click', goBack);
   }
 
-  // ---- Clear results between screens ----
+  // ---- Clear results ----
   function clearResults() {
     var results = document.querySelectorAll('.result-box');
     for (var r = 0; r < results.length; r++) {
@@ -115,13 +115,58 @@
     }
   }
 
-  // ---- Keyword lists for basic heuristics ----
+  // ---- Show result ----
+  function showResult(boxId, type, msg) {
+    var box = document.getElementById(boxId);
+    if (!box) return;
+    box.className = 'result-box result-' + type;
+    box.textContent = msg;
+  }
+
+  // ---- Groq API call via XHR (ES5, KaiOS compatible) ----
+  function callGroqCheck(type, text, boxId) {
+    showResult(boxId, 'warn', 'Checking with AI...');
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/check', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.timeout = 15000;
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+
+      if (xhr.status === 200) {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          var verdict = data.verdict || 'warn';
+          var reason = data.reason || 'No details returned.';
+          showResult(boxId, verdict, reason);
+        } catch (e) {
+          showResult(boxId, 'warn', 'Could not parse AI response. Use caution.');
+        }
+      } else {
+        // Fallback to offline keyword check on API failure
+        offlineCheck(type, text, boxId);
+      }
+    };
+
+    xhr.ontimeout = function () {
+      offlineCheck(type, text, boxId);
+    };
+
+    xhr.onerror = function () {
+      offlineCheck(type, text, boxId);
+    };
+
+    xhr.send(JSON.stringify({ type: type, text: text }));
+  }
+
+  // ---- Offline fallback (keyword heuristics) ----
   var FRAUD_KEYWORDS = [
     'lottery', 'winner', 'prize', 'congratulations', 'otp', 'bank account',
     'verify now', 'click here', 'claim your', 'free gift', 'urgent',
     'suspended', 'blocked', 'update your', 'kyc', 'reward', 'limited time',
-    'won', 'selected', 'bit.ly', 'tinyurl', 'goo.gl', 'ow.ly', 'is.gd',
-    'suspicious', 'phishing', 'scam', 'hack', 'fake'
+    'won', 'selected', 'bit.ly', 'tinyurl', 'goo.gl', 'ow.ly', 'is.gd'
   ];
 
   var SAFE_DOMAINS = [
@@ -145,19 +190,26 @@
     return false;
   }
 
-  function showResult(boxId, type, msg) {
-    var box = document.getElementById(boxId);
-    if (!box) return;
-    box.className = 'result-box result-' + type;
-    box.textContent = msg;
+  function offlineCheck(type, text, boxId) {
+    if (type === 'link') {
+      if (isSafeDomain(text)) {
+        showResult(boxId, 'safe', '(Offline) Domain looks like a known safe site.');
+        return;
+      }
+    }
+    var found = containsKeyword(text, FRAUD_KEYWORDS);
+    if (found) {
+      showResult(boxId, 'danger', '(Offline) WARNING: Suspicious pattern "' + found + '" found!');
+    } else {
+      showResult(boxId, 'warn', '(Offline) No obvious fraud signs. AI check unavailable.');
+    }
   }
 
-  // ---- QR Scan (mock) ----
+  // ---- QR Check ----
   var qrScanBtn = document.getElementById('qr-scan-btn');
   if (qrScanBtn) {
     qrScanBtn.addEventListener('click', function () {
-      showResult('qr-result', 'warn',
-        'Camera not available on this device. Please type the UPI ID below to verify.');
+      showResult('qr-result', 'warn', 'Camera not available. Type the UPI ID below.');
     });
   }
 
@@ -165,64 +217,32 @@
   if (qrCheckBtn) {
     qrCheckBtn.addEventListener('click', function () {
       var val = document.getElementById('qr-input').value.trim();
-      if (!val) {
-        showResult('qr-result', 'warn', 'Please enter a UPI ID or payment link.');
-        return;
-      }
-      var found = containsKeyword(val, FRAUD_KEYWORDS);
-      if (found) {
-        showResult('qr-result', 'danger', 'WARNING: Suspicious pattern "' + found + '" found. Do NOT pay!');
-      } else if (val.indexOf('@') === -1 && val.indexOf('upi://') === -1) {
-        showResult('qr-result', 'warn', 'Could not verify. Check UPI ID format (e.g. name@bank).');
-      } else {
-        showResult('qr-result', 'safe', 'Looks OK. Always confirm recipient name before paying.');
-      }
+      if (!val) { showResult('qr-result', 'warn', 'Please enter a UPI ID or payment link.'); return; }
+      callGroqCheck('qr', val, 'qr-result');
     });
   }
 
-  // ---- Message Checker ----
+  // ---- Message Check ----
   var msgCheckBtn = document.getElementById('msg-check-btn');
   if (msgCheckBtn) {
     msgCheckBtn.addEventListener('click', function () {
       var val = document.getElementById('msg-input').value.trim();
-      if (!val) {
-        showResult('msg-result', 'warn', 'Please paste a message to check.');
-        return;
-      }
-      var found = containsKeyword(val, FRAUD_KEYWORDS);
-      if (found) {
-        showResult('msg-result', 'danger', 'DANGER: Fraud keyword "' + found + '" found. This is likely a scam!');
-      } else {
-        showResult('msg-result', 'safe', 'No obvious fraud keywords found. Stay cautious.');
-      }
+      if (!val) { showResult('msg-result', 'warn', 'Please paste a message to check.'); return; }
+      callGroqCheck('message', val, 'msg-result');
     });
   }
 
-  // ---- Link Checker ----
+  // ---- Link Check ----
   var linkCheckBtn = document.getElementById('link-check-btn');
   if (linkCheckBtn) {
     linkCheckBtn.addEventListener('click', function () {
       var val = document.getElementById('link-input').value.trim();
-      if (!val) {
-        showResult('link-result', 'warn', 'Please paste a link to check.');
-        return;
-      }
-      if (isSafeDomain(val)) {
-        showResult('link-result', 'safe', 'Domain appears to be from a known safe site.');
-      } else {
-        var found = containsKeyword(val, FRAUD_KEYWORDS);
-        if (found) {
-          showResult('link-result', 'danger', 'DANGER: Suspicious link. Do NOT click!');
-        } else if (val.indexOf('http') === -1) {
-          showResult('link-result', 'warn', 'Not a valid link format. Try pasting the full URL.');
-        } else {
-          showResult('link-result', 'warn', 'Unknown link. Proceed with caution. Avoid entering OTP or passwords.');
-        }
-      }
+      if (!val) { showResult('link-result', 'warn', 'Please paste a link to check.'); return; }
+      callGroqCheck('link', val, 'link-result');
     });
   }
 
-  // ---- Video Checker (mock) ----
+  // ---- Video Check ----
   var videoCheckBtn = document.getElementById('video-check-btn');
   if (videoCheckBtn) {
     videoCheckBtn.addEventListener('click', function () {
