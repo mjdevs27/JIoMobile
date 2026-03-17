@@ -1,0 +1,21 @@
+{
+  "name": "Fraud Protection",
+  "description": "A simple fraud safety assistant for checking QR codes, messages, links, and videos on KaiOS devices.",
+  "launch_path": "/index.html",
+  "developer": {
+    "name": "Jio Safety Team",
+    "url": "https://www.jio.com"
+  },
+  "icons": {
+    "56": "/icons/icon56.png",
+    "112": "/icons/icon112.png"
+  },
+  "default_locale": "en",
+  "type": "web",
+  "permissions": {
+    "camera": {
+      "description": "Access camera for QR code scanning"
+    }
+  },
+  "version": "1.0.0"
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Fraud Protection Assistant for KaiOS - Check QR codes, messages, links and videos for fraud.">
+  <title>Fraud Protection</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <span id="header-title">Fraud Protection</span>
+  </div>
+
+  <!-- ===== HOME SCREEN ===== -->
+  <div id="home" class="screen active">
+    <p class="menu-title">Select an option:</p>
+
+    <button class="menu-item selected" id="menu-0">
+      <span class="menu-num">1</span> Check QR Payment
+    </button>
+    <button class="menu-item" id="menu-1">
+      <span class="menu-num">2</span> Check Message
+    </button>
+    <button class="menu-item" id="menu-2">
+      <span class="menu-num">3</span> Check Link
+    </button>
+    <button class="menu-item" id="menu-3">
+      <span class="menu-num">4</span> Check Video
+    </button>
+    <button class="menu-item" id="menu-4">
+      <span class="menu-num">5</span> Safety Tips
+    </button>
+  </div>
+
+  <!-- ===== QR SCREEN ===== -->
+  <div id="qr" class="screen">
+    <p class="page-title">Check QR Payment</p>
+
+    <div class="cam-box">
+      [Camera]<br>Not available
+    </div>
+
+    <button id="qr-scan-btn" class="btn">Scan QR (Mock)</button>
+
+    <label class="upload-label" for="qr-input">Or type UPI ID / link:</label>
+    <input type="text" id="qr-input" placeholder="e.g. name@okaxis">
+
+    <button id="qr-check-btn" class="btn">Check Now</button>
+
+    <div id="qr-result" class="result-box"></div>
+
+    <button class="btn back-btn">&#8592; Back</button>
+  </div>
+
+  <!-- ===== MESSAGE SCREEN ===== -->
+  <div id="message" class="screen">
+    <p class="page-title">Check Message</p>
+
+    <label class="upload-label" for="msg-input">Paste suspicious message:</label>
+    <textarea id="msg-input" rows="5" placeholder="Paste SMS or message here..."></textarea>
+
+    <button id="msg-check-btn" class="btn">Check Message</button>
+
+    <div id="msg-result" class="result-box"></div>
+
+    <button class="btn back-btn">&#8592; Back</button>
+  </div>
+
+  <!-- ===== LINK SCREEN ===== -->
+  <div id="link" class="screen">
+    <p class="page-title">Check Link</p>
+
+    <label class="upload-label" for="link-input">Paste a URL to check:</label>
+    <input type="text" id="link-input" placeholder="e.g. https://example.com">
+
+    <button id="link-check-btn" class="btn">Check Link</button>
+
+    <div id="link-result" class="result-box"></div>
+
+    <button class="btn back-btn">&#8592; Back</button>
+  </div>
+
+  <!-- ===== VIDEO SCREEN ===== -->
+  <div id="video" class="screen">
+    <p class="page-title">Check Video</p>
+
+    <p class="upload-label">Upload a video to detect deepfakes:</p>
+    <input type="file" id="video-file" accept="video/*"
+           style="color:#fff;font-size:13px;margin-bottom:8px;">
+
+    <button id="video-check-btn" class="btn">Analyse Video</button>
+
+    <div id="video-result" class="result-box"></div>
+
+    <button class="btn back-btn">&#8592; Back</button>
+  </div>
+
+  <!-- ===== SAFETY TIPS SCREEN ===== -->
+  <div id="tips" class="screen">
+    <p class="page-title">Safety Tips</p>
+
+    <div class="tip-item">
+      <span class="tip-num">1.</span>
+      Never share your OTP, PIN, or password with anyone — even bank officials.
+    </div>
+    <div class="tip-item">
+      <span class="tip-num">2.</span>
+      Do NOT scan unknown QR codes. Verify the payee name before confirming.
+    </div>
+    <div class="tip-item">
+      <span class="tip-num">3.</span>
+      Ignore messages claiming you won a lottery or prize.
+    </div>
+    <div class="tip-item">
+      <span class="tip-num">4.</span>
+      Do not click links from unknown numbers. Go directly to official websites.
+    </div>
+    <div class="tip-item">
+      <span class="tip-num">5.</span>
+      Verify video calls — deepfake videos can fake a person's face and voice.
+    </div>
+    <div class="tip-item">
+      <span class="tip-num">6.</span>
+      Report fraud: Call 1930 (Cyber Crime Helpline, India).
+    </div>
+
+    <button class="btn back-btn" style="margin-top:10px;">&#8592; Back</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="footer">
+    &#8593; &#8595; Navigate &nbsp;|&nbsp; OK Select &nbsp;|&nbsp; Back Return
+  </div>
+
+</div><!-- #app -->
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  width: 240px;
+  min-height: 320px;
+  overflow-x: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+}
+
+/* HEADER */
+#header {
+  background: #005a9c;
+  color: #fff;
+  text-align: center;
+  padding: 6px 4px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* SCREEN */
+.screen {
+  display: none;
+  flex: 1;
+  padding: 8px;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* HOME MENU */
+.menu-title {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 8px;
+  margin-bottom: 4px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #333;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-item.selected {
+  background: #005a9c;
+  border-color: #fff;
+  color: #fff;
+}
+
+.menu-num {
+  color: #ffcc00;
+  font-weight: bold;
+  margin-right: 6px;
+}
+
+/* PAGE TITLE */
+.page-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #ffcc00;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}
+
+/* TEXTAREA / INPUT */
+textarea,
+input[type="text"] {
+  width: 100%;
+  background: #111;
+  color: #fff;
+  border: 2px solid #555;
+  padding: 6px;
+  font-size: 14px;
+  resize: none;
+  margin-bottom: 8px;
+}
+
+textarea:focus,
+input[type="text"]:focus {
+  border-color: #ffcc00;
+  outline: none;
+}
+
+/* BUTTON */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: #005a9c;
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.btn:focus,
+.btn:hover {
+  background: #007acc;
+  outline: none;
+}
+
+/* RESULT BOX */
+.result-box {
+  background: #111;
+  border: 2px solid #555;
+  padding: 8px;
+  font-size: 14px;
+  margin-top: 8px;
+  min-height: 40px;
+  word-wrap: break-word;
+}
+
+.result-safe {
+  border-color: #00cc44;
+  color: #00cc44;
+}
+
+.result-warn {
+  border-color: #ffcc00;
+  color: #ffcc00;
+}
+
+.result-danger {
+  border-color: #ff4444;
+  color: #ff4444;
+}
+
+/* QR CAM PLACEHOLDER */
+.cam-box {
+  width: 150px;
+  height: 150px;
+  border: 3px dashed #555;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* SAFETY TIPS */
+.tip-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tip-num {
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+/* VIDEO UPLOAD */
+.upload-label {
+  display: block;
+  color: #aaa;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+/* FOOTER */
+#footer {
+  background: #111;
+  color: #aaa;
+  text-align: center;
+  font-size: 11px;
+  padding: 5px 2px;
+  border-top: 1px solid #333;
+}
